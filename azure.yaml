@@ -1,0 +1,25 @@
+# Azure Developer CLI (azd) configuration
+name: zava-storefront
+metadata:
+  template: zava-storefront@0.0.1
+
+services:
+  web:
+    project: ./src
+    language: dotnet
+    host: appservice
+    docker:
+      path: ./Dockerfile
+      context: ./src
+
+hooks:
+  # Run before provisioning
+  preprovision:
+    posix:
+      shell: sh
+      run: echo "Starting infrastructure provisioning..."
+      continueOnError: false
+    windows:
+      shell: pwsh
+      run: echo "Starting infrastructure provisioning..."
+      continueOnError: false

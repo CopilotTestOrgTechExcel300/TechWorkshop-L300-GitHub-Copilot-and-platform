@@ -2,6 +2,16 @@ using ZavaStorefront.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure URLs - Azure App Service sets ASPNETCORE_URLS automatically
+// For Codespaces, we'll set it via command line or environment
+// Remove custom Kestrel config to let the defaults work
+var isCodespaces = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"));
+if (isCodespaces && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    // Only for local Codespaces development
+    builder.WebHost.UseUrls("http://0.0.0.0:5256");
+}
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -25,11 +35,12 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+// Enable HTTPS redirection (Azure handles SSL termination)
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
